@@ -20,15 +20,6 @@ Meta-Controller: A PID law that dynamically adjusts the filter's uncertainty low
 
 Safety Guarantees: Mathematically enforced via Control Barrier Functions (CBFs) resolved dynamically through Quadratic Programming (QP).
 
-📁 Repository Structure
-
-/Garagara-Aeronautics
-├── /core
-│   └── panda_garagara_simulation_wind_tunnel.py  <-- Core Wind-Tunnel Engine
-├── /docs
-│   └── PAPER.md                                  <-- Complete Research Paper
-└── README.md                                     <-- You Are Here
-
 
 🚀 Quick Start (Wind-Tunnel Simulation)
 
