@@ -1,62 +1,61 @@
-Flying Garagara Panda: Aerial Supremacy over WAF Heuristics 🐼 🛫
+🐼 Flying-Garagara-Panda: The Meta-Cognitive Autopilot Wind-Tunnel
 
-"They spent millions building fortress walls on the ground. We simply grew wings and flew over them."
+Garagara Aeronautics Laboratory (GAL) — Special Theoretical Release
+Dynamics-based evasion research. Simulating the collapse of static WAF defense heuristics through stochastic autopilot and chaotic trajectory scheduling.
 
-Welcome to the official repository of Project Garagara — the home of Flying Garagara Panda, a unified, biomimetic, closed-loop cyber-evasion system that treats WAF bypass not as an exploit, but as a non-linear stochastic control problem.
+🔬 Project Overview
 
-This repository hosts the simulation wind-tunnel demonstrating a 99.810% evasion survival rate under aggressive, dynamic firewall postures.
+This repository houses the mathematical blueprint and dynamic simulation suite for the Meta-Cognitive Autopilot framework. Developed by the Institute of Bamboo and Cyber-Aerodynamics, this project bridges advanced aerospace control theory (stochastic state estimation, control Lyapunov functions, and quadratic programming barriers) with modern web navigation kinetics.
 
-🌪️ The Paradigm Shift: Dynamic Cyber-Dynamics
+By translating automated interaction patterns into a continuous-time dynamical system, we model the interaction between an agent and adaptive behavioral classifiers as a Stochastic Closed-Loop Control Problem.
 
-Traditional automated agents (web crawlers) fail because they are "grounded"—they behave like clumsy scripts with uniform delays or static random noise. WAF classifiers easily detect these using auto-correlation and temporal power spectral density (PSD).
+🛠️ System Architecture
 
-Flying Garagara Panda introduces the Meta-Cognitive Autopilot framework:
+Our "Panda" framework operates on a three-tier cyber-aerodynamic structure:
 
-Outer-Loop Biological Generator: Couples a 1D Logistic Map chaotic temporal scheduler ($r=3.99$, guaranteeing a strictly positive Lyapunov exponent $\lambda \approx 0.693$) with a minimum-jerk Cubic Bezier trajectory generator.
+Outer-Loop Biological Generator: Uses a 1D Logistic Map chaotic scheduler combined with a minimum-jerk Cubic Bezier trajectory model to completely disperse temporal power spectral density (PSD).
 
-Inner-Loop Cognitive State Estimator: Tracks WAF alertness using an SDE modeled through a covariance-bounded Kalman Filter under Loewner partial ordering.
+Inner-Loop Cognitive Estimator: Tracks firewall alertness dynamically using a Loewner-bounded Kalman Filter to prevent state complacency.
 
-Meta-Controller: A PID law that dynamically adjusts the filter's uncertainty lower bounds to eliminate estimation lag during defense escalations.
+Low-Level Safety Guard: Dynamically constrains the transmission velocity using Stochastic Control Barrier Functions (S-CBFs) solved via Quadratic Programming (QP).
 
-Safety Guarantees: Mathematically enforced via Control Barrier Functions (CBFs) resolved dynamically through Quadratic Programming (QP).
+For a complete mathematical breakdown, please refer to our published paper: docs/PAPER.md.
 
+🛡️ Academic Disclaimer & Legal Safe Harbor 
 
-🚀 Quick Start (Wind-Tunnel Simulation)
+PLEASE READ THE FOLLOWING TERMS CAREFULLY BEFORE EXAMINING THE CODEBASE:
 
-To witness the mathematical collapse of traditional behavioral classifiers, run the high-fidelity wind-tunnel simulation.
+1. Purely Theoretical & Simulation-Based 
 
-Prerequisites
+Zero Active Exploitation (無主動攻擊載荷): This repository does not contain any active network exploits, session hijackers, payload injectors, or automated bypass scripts targeting any commercial websites, servers, or cloud protection providers (including but not limited to Cloudflare, Akamai, AWS Shield, etc.).
 
+Local Wind-Tunnel Environment (純本地風洞模擬): The simulation script (core/panda_garagara_simulation_wind_tunnel.py) is designed to run strictly in a local, simulated mathematical environment. It generates synthesized data using numpy and plots results locally with matplotlib. It does not establish any external socket connections to real-world production networks.
+
+2. Defensive & Academic Purpose Only 
+
+This project is published solely for academic research under the paradigm of Adversarial Machine Learning and Defensive Robustness Verification.
+
+The primary objective of this research is to expose the systemic mathematical limitations of current heuristic and machine learning-based behavioral classifiers, aiding defensive security engineering teams in designing more resilient, next-generation anomaly detection engines.
+
+3. Limitation of Liability 
+
+The author (Dr. Panda Garagara / garagara_overhead) is an independent academic researcher.
+
+Under no circumstances shall the author be held liable for any external adaptations, unauthorized modifications, or third-party usage of these conceptual control-theoretic frameworks in production environments. Any use of these concepts outside of local numerical simulations is done entirely at the user's own risk.
+
+📊 Quick Start: Local Wind-Tunnel Execution
+
+To observe the control barrier function dynamically throttle request rates under varying hostility environments in our local simulation, execute:
+
+# Clone the repository
+git clone [https://github.com/your_username/Flying-Garagara-Panda.git](https://github.com/your_username/Flying-Garagara-Panda.git)
+cd Flying-Garagara-Panda
+
+# Install plotting dependencies
 pip install numpy matplotlib
 
-
-Run the Wind-Tunnel
-
+# Launch the simulation wind-tunnel
 python core/panda_garagara_simulation_wind_tunnel.py
 
 
-This will run 10,000 continuous sequential requests through an "Extreme Threat Phase" (simulating a dynamic firewall challenge upgrade between step 4000 and 6500) and generate a survivability graph showing:
-
-Group A (Traditional Bot): Crumbles to a 17.52% survival rate.
-
-Group D (Meta-Cognitive Autopilot): Soars with a near-perfect 99.81% survival rate.
-
-📜 Academic Research Paper
-
-The complete mathematical proofs, formulations, and empirical analyses are documented in docs/Panda_Garagara_Biomimetic_Evasion_2026.pdf.
-
-Citation
-
-@article{panda2026metacognitive,
-  title={The Meta-Cognitive Autopilot: A Unified Control-Theoretic Framework for Biomimetic Evasion of Advanced Behavioral Classifiers},
-  author={Panda, Garagara},
-  journal={Institute of Bamboo and Cyber-Aerodynamics},
-  year={2026}
-}
-
-
-⚠️ Warning to Defensive Security Teams
-
-If you attempt to patch this by adding more static "heuristic features" or increasing the sensitivity of your classifiers, you will only feed our state estimator more training data. The more you try to pin the Panda down, the more chaotic ($r \to 4.0$) and unpredictable the flight path becomes.
-
-The sky is ours. Feel free to adjust your security posture. It won't change the outcome. 🛫🐼
+The simulator will output real-time tracking graphs demonstrating the mathematical convergence of the dynamic state-estimator and the CBF-QP safety envelope.
