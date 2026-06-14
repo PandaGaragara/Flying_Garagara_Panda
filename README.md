@@ -1,28 +1,71 @@
-# Flying_Garagara_Panda
-Dynamics-based evasion research. Simulating the collapse of static WAF defense heuristics through stochastic autopilot and chaotic trajectory scheduling.
-# Flying Garagara Panda: Aerial Supremacy over WAFs
+Flying Garagara Panda: Aerial Supremacy over WAF Heuristics 🐼 🛫
 
-> *"You spent millions building a wall. I just grew wings."*
+"They spent millions building fortress walls on the ground. We simply grew wings and flew over them."
 
-Welcome to the **Flying Garagara Panda** repository. 
+Welcome to the official repository of Project Garagara — the home of Flying Garagara Panda, a unified, biomimetic, closed-loop cyber-evasion system that treats WAF bypass not as an exploit, but as a non-linear stochastic control problem.
 
-If you are a defensive engineer at a major security firm, please sit down. Take a deep breath. 
-You are currently staring at the reason your "state-of-the-art" behavior analysis just failed. You spent months tuning your ML models, obsessing over "user fingerprinting," and tightening your CAPTCHA thresholds—only to have your entire infrastructure bypassed by a 19-year-old student using nothing but **Dynamics, Control Theory, and a Flying Panda.**
+This repository hosts the simulation wind-tunnel demonstrating a 99.810% evasion survival rate under aggressive, dynamic firewall postures.
 
-## ☁️ Why we are "Flying"
-Most bots are grounded—they are heavy, predictable, and they trigger your tripwires because they behave like clumsy scripts. 
-**Flying Garagara Panda** doesn't care about your rules because we don't play on the ground. By using **Stochastic Meta-Cognitive Autopilot**, we hover above your detection heuristics, rendering your "rules" irrelevant.
+🌪️ The Paradigm Shift: Dynamic Cyber-Dynamics
 
-We didn't "break" your security. We simply flew over it while you were busy looking at the dirt.
+Traditional automated agents (web crawlers) fail because they are "grounded"—they behave like clumsy scripts with uniform delays or static random noise. WAF classifiers easily detect these using auto-correlation and temporal power spectral density (PSD).
 
-## ⚠️ Warning
-If you try to patch this by adding more "features" to your classifier, we will simply increase the chaos factor. The more you try to pin us down, the more unpredictable we become. 
+Flying Garagara Panda introduces the Meta-Cognitive Autopilot framework:
 
-**The Panda is airborne.** *Feel free to adjust your security posture. It won't change the outcome.*
+Outer-Loop Biological Generator: Couples a 1D Logistic Map chaotic temporal scheduler ($r=3.99$, guaranteeing a strictly positive Lyapunov exponent $\lambda \approx 0.693$) with a minimum-jerk Cubic Bezier trajectory generator.
 
-## 📜 Research
-- **Paper I: [Stochastic Meta-Cognitive Autopilot: Bypassing Edge-Gateways via Nonlinear Dynamics]** - *Coming Soon*
-- The code provided here is a mere simulation. The real navigation is happening right above your WAF logs.
+Inner-Loop Cognitive State Estimator: Tracks WAF alertness using an SDE modeled through a covariance-bounded Kalman Filter under Loewner partial ordering.
 
----
-*If you are looking for the "bug," you won't find it. What you are seeing is not a vulnerability—it's a paradigm shift.*
+Meta-Controller: A PID law that dynamically adjusts the filter's uncertainty lower bounds to eliminate estimation lag during defense escalations.
+
+Safety Guarantees: Mathematically enforced via Control Barrier Functions (CBFs) resolved dynamically through Quadratic Programming (QP).
+
+📁 Repository Structure
+
+/Garagara-Aeronautics
+├── /core
+│   └── panda_garagara_simulation_wind_tunnel.py  <-- Core Wind-Tunnel Engine
+├── /docs
+│   └── PAPER.md                                  <-- Complete Research Paper
+└── README.md                                     <-- You Are Here
+
+
+🚀 Quick Start (Wind-Tunnel Simulation)
+
+To witness the mathematical collapse of traditional behavioral classifiers, run the high-fidelity wind-tunnel simulation.
+
+Prerequisites
+
+pip install numpy matplotlib
+
+
+Run the Wind-Tunnel
+
+python core/panda_garagara_simulation_wind_tunnel.py
+
+
+This will run 10,000 continuous sequential requests through an "Extreme Threat Phase" (simulating a dynamic firewall challenge upgrade between step 4000 and 6500) and generate a survivability graph showing:
+
+Group A (Traditional Bot): Crumbles to a 17.52% survival rate.
+
+Group D (Meta-Cognitive Autopilot): Soars with a near-perfect 99.81% survival rate.
+
+📜 Academic Research Paper
+
+The complete mathematical proofs, formulations, and empirical analyses are documented in docs/PAPER.md.
+
+Citation
+
+@article{panda2026metacognitive,
+  title={The Meta-Cognitive Autopilot: A Unified Control-Theoretic Framework for Biomimetic Evasion of Advanced Behavioral Classifiers},
+  author={Panda, Garagara},
+  journal={Institute of Bamboo and Cyber-Aerodynamics},
+  year={2026}
+}
+
+
+⚠️ Warning to Defensive Security Teams
+
+If you attempt to patch this by adding more static "heuristic features" or increasing the sensitivity of your classifiers, you will only feed our state estimator more training data. The more you try to pin the Panda down, the more chaotic ($r \to 4.0$) and unpredictable the flight path becomes.
+
+The sky is ours. Feel free to adjust your security posture. It won't change the outcome. 🛫🐼
