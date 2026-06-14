@@ -27,9 +27,9 @@ PLEASE READ THE FOLLOWING TERMS CAREFULLY BEFORE EXAMINING THE CODEBASE:
 
 1. Purely Theoretical & Simulation-Based 
 
-Zero Active Exploitation (無主動攻擊載荷): This repository does not contain any active network exploits, session hijackers, payload injectors, or automated bypass scripts targeting any commercial websites, servers, or cloud protection providers (including but not limited to Cloudflare, Akamai, AWS Shield, etc.).
+Zero Active Exploitation : This repository does not contain any active network exploits, session hijackers, payload injectors, or automated bypass scripts targeting any commercial websites, servers, or cloud protection providers (including but not limited to Cloudflare, Akamai, AWS Shield, etc.).
 
-Local Wind-Tunnel Environment (純本地風洞模擬): The simulation script (core/panda_garagara_simulation_wind_tunnel.py) is designed to run strictly in a local, simulated mathematical environment. It generates synthesized data using numpy and plots results locally with matplotlib. It does not establish any external socket connections to real-world production networks.
+Local Wind-Tunnel Environment : The simulation script (core/panda_garagara_simulation_wind_tunnel.py) is designed to run strictly in a local, simulated mathematical environment. It generates synthesized data using numpy and plots results locally with matplotlib. It does not establish any external socket connections to real-world production networks.
 
 2. Defensive & Academic Purpose Only 
 
