@@ -43,7 +43,7 @@ Group D (Meta-Cognitive Autopilot): Soars with a near-perfect 99.81% survival ra
 
 📜 Academic Research Paper
 
-The complete mathematical proofs, formulations, and empirical analyses are documented in docs/PAPER.md.
+The complete mathematical proofs, formulations, and empirical analyses are documented in docs/Panda_Garagara_Biomimetic_Evasion_2026.pdf.
 
 Citation
 
