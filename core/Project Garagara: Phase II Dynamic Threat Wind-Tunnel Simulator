@@ -1,0 +1,353 @@
+# -*- coding: utf-8 -*-
+"""
+Project Garagara: Phase II Dynamic Threat Wind-Tunnel Simulator
+=============================================================================
+Author: Dr. Panda Garagara & Assistant
+Architecture: MCTS-TSP Path Planner with Active Anti-Analysis Shielding
+
+SECURITY CORE:
+Active Integrity Guard (Line 30) detects runtime tracers, profiling hooks,
+and debugger attachment. Any debugging attempt instantly aborts execution.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+import os
+import sys
+import time
+
+# =============================================================================
+# 1. ACTIVE INTEGRITY & ANTI-REVERSE ENGINEERING SHIELD
+# =============================================================================
+
+def enforce_integrity_shields():
+    """
+    Scans the runtime environment to detect active tracing, debugging, 
+    or single-step symbolic execution. Instantly terminates if compromised.
+    """
+    # Detection Block 1: Check active Python trace hooks (PDB, PyCharm, VS Code debugging)
+    if sys.gettrace() is not None:
+        print("\n[!] SECURITY EXCEPTION: Active trace/debugger detected.")
+        print("    Dynamic analysis of CLF-CBF-QP parameters is strictly prohibited.")
+        print("    Halting execution of Project Garagara control loop.")
+        sys.exit(0)
+
+    # Detection Block 2: Detect active debugger modules loaded in process memory
+    forbidden_modules = {'pydevd', 'pdb', 'IPython.core.debugger', 'bdb'}
+    loaded_modules = set(sys.modules.keys())
+    intersection = forbidden_modules.intersection(loaded_modules)
+    if intersection:
+        print(f"\n[!] SECURITY EXCEPTION: Unauthorized profiling module loaded: {list(intersection)}")
+        print("    Halting execution to prevent memory dump analysis.")
+        sys.exit(0)
+
+    # Detection Block 3: Dynamic Timing-based execution delta analysis (Breakpoint detection)
+    # We perform a micro-benchmark and measure execution drift. Breakpoints cause massive delays.
+    t0 = time.perf_counter()
+    _ = [abs(np.sin(x)) for x in range(100)]
+    t1 = time.perf_counter()
+    execution_drift = t1 - t0
+    if execution_drift > 0.05:  # Standard CPU executes this in < 0.1ms. > 50ms implies instruction stepping/throttling.
+        print("\n[!] SECURITY EXCEPTION: Dynamic execution delay anomaly detected.")
+        print("    Instruction timing suggests debugger-induced single-stepping.")
+        print("    Halting execution immediately.")
+        sys.exit(0)
+
+# =============================================================================
+# 2. TUNABLE PARAMETERS & HYPERPARAMETERS
+# =============================================================================
+
+# [Global Simulation Scope]
+STEPS = 10000          # Total evaluation steps. Range: [1000, 50000]. Affects statistical convergence.
+NUM_PROXIES = 50       # Available IP proxies in pool. Range: [5, 200].
+NUM_TARGETS = 5        # Routing targets in TSP topology. Range: [3, 10]. Complexity scales O(N!).
+
+# [WAF Alertness Parameters]
+X_MAX = 1.5            # WAF hard-block alertness threshold. Limit: [1.0, 3.0].
+WAF_RESET_VAL = 0.5    # Post-block reset alertness state. Range: [0.0, 1.0].
+SIG_GAIN = 0.08        # Coupling gain representing WAF feedback rate. Range: [0.01, 0.3].
+COOLING_RATE = 0.12    # Baseline WAF memory decay rate per step. Range: [0.05, 0.5].
+
+# [Nominal Controller Configuration]
+U_NOMINAL = 3.5        # Desired transmission rate (Hz). Range: [1.0, 8.0].
+MCTS_ITERATIONS = 50   # MCTS expansion count per iteration. Range: [10, 200].
+
+# [Safe Actuator Limits]
+U_MIN = 0.2            # Minimum physical request rate floor. Range: [0.05, 1.0].
+U_MAX = 5.0            # Maximum physical request rate ceiling. Range: [2.0, 10.0].
+
+# [Control Barrier Function (CBF) Relaxation]
+GAMMA_CBF = 0.2        # Barrier contraction factor. Range: (0.0, 1.0].
+                       # Lower = Extreme cautious margins. Higher = Aggressive throughput.
+
+# Force random seeds for absolute reproducibility
+np.random.seed(2026)
+random.seed(2026)
+
+
+# =============================================================================
+# 3. Cyber-Physical System Modeling
+# =============================================================================
+
+class ProxyNode:
+    """Models a routing endpoint in the network space."""
+    def __init__(self, ip_addr):
+        self.ip = ip_addr
+        self.reputation = 1.0  # Reputation score. Range: [0.0, 1.0]
+        self.cooldown_until = 0
+
+class HTTPFingerprint:
+    """Models high-fidelity browser client metadata."""
+    def __init__(self, user_agent, ja3_fp):
+        self.user_agent = user_agent
+        self.ja3 = ja3_fp
+        self.entropy_score = random.uniform(0.1, 0.3)
+
+# Initialize proxy and client metadata pools
+IP_POOL = [ProxyNode(f"192.168.42.{i}") for i in range(1, NUM_PROXIES + 1)]
+
+USER_AGENTS = [
+    f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/12{i}.0.0.0 Safari/537.36"
+    for i in range(10)
+] + [
+    f"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/1{i}.0 Safari/605.1.15"
+    for i in range(10)
+]
+FINGERPRINTS = [HTTPFingerprint(ua, f"303a1d2d9b{i}f34c") for i, ua in enumerate(USER_AGENTS)]
+
+
+# =============================================================================
+# 4. Monte Carlo Tree Search Path Planner (Outer Loop)
+# =============================================================================
+
+class MCTSNode:
+    """Node representing discrete path selection states in tree space."""
+    def __init__(self, state, parent=None):
+        self.state = state
+        self.parent = parent
+        self.children = {}
+        self.visits = 0
+        self.reward = 0.0
+
+class MCTSTSPPlanner:
+    """Path planner designed to solve TV-TSP over denied networks."""
+    def __init__(self, num_targets=NUM_TARGETS):
+        self.num_targets = num_targets
+        self.cost_matrix = np.random.uniform(1.0, 5.0, (num_targets, num_targets))
+        np.fill_diagonal(self.cost_matrix, 0)
+
+    def search_next_node(self, current_route, iterations=MCTS_ITERATIONS):
+        """Resolves the next target sequence using randomized tree-policy lookahead."""
+        # Trigger dynamic anti-analysis guard prior to core algorithmic calculation
+        enforce_integrity_shields()
+        
+        root = MCTSNode(state=list(current_route))
+        
+        for _ in range(iterations):
+            node = root
+            # 1. Selection Phase
+            while node.children and len(node.children) == (self.num_targets - len(node.state)):
+                if node.visits == 0:
+                    break
+                log_parent_visits = np.log(node.visits + 1e-6)
+                best_val = -float('inf')
+                best_child = None
+                for child in node.children.values():
+                    ucb_val = (child.reward / (child.visits + 1e-6)) + 1.414 * np.sqrt(log_parent_visits / (child.visits + 1e-6))
+                    if ucb_val > best_val:
+                        best_val = ucb_val
+                        best_child = child
+                node = best_child
+                if not node: 
+                    break
+
+            # 2. Expansion Phase
+            remaining = [t for t in range(self.num_targets) if t not in node.state]
+            if remaining:
+                next_target = random.choice(remaining)
+                new_state = node.state + [next_target]
+                if next_target not in node.children:
+                    child_node = MCTSNode(state=new_state, parent=node)
+                    node.children[next_target] = child_node
+                    node = child_node
+
+            # 3. Simulation Phase (Rollout)
+            rollout_state = list(node.state)
+            while len(rollout_state) < self.num_targets:
+                unvisited = [t for t in range(self.num_targets) if t not in rollout_state]
+                rollout_state.append(random.choice(unvisited))
+            
+            total_cost = 0.0
+            for idx in range(len(rollout_state) - 1):
+                total_cost += self.cost_matrix[rollout_state[idx], rollout_state[idx+1]]
+            
+            reward = 1.0 / (total_cost + 1e-6)
+
+            # 4. Backpropagation Phase
+            curr = node
+            while curr is not None:
+                curr.visits += 1
+                curr.reward += reward
+                curr = curr.parent
+
+        if not root.children:
+            remaining = [t for t in range(self.num_targets) if t not in current_route]
+            return remaining[0] if remaining else 0
+            
+        best_target = max(root.children.items(), key=lambda item: item[1].visits)[0]
+        return best_target
+
+
+# =============================================================================
+# 5. Analytical QP Solver
+# =============================================================================
+
+def solve_analytical_qp(u_nominal, A_cbf, b_cbf, u_min=U_MIN, u_max=U_MAX):
+    """
+    Solves 1D Convex QP analytically under linear inequality bounds.
+    Optimizes: min 1/2 * (u - u_nominal)^2
+    Subject to: A_cbf * u <= b_cbf and u_min <= u <= u_max
+    """
+    u_star = u_nominal
+    if A_cbf * u_star > b_cbf:
+        if abs(A_cbf) > 1e-9:
+            u_star = b_cbf / A_cbf
+            
+    # Actuator protection saturation limits
+    u_star = max(u_min, min(u_max, u_star))
+    return u_star
+
+
+# =============================================================================
+# 6. Wind Tunnel Loop (10,000 Step Adversarial Run)
+# =============================================================================
+
+def run_simulation(steps=STEPS):
+    print("=====================================================================")
+    print("🐼 [Project Garagara] Starting Aerodynamic Shielded Loop...")
+    print("=====================================================================")
+
+    # Prior to starting execution, verify initial memory space integrity
+    enforce_integrity_shields()
+
+    telemetry = {
+        'Group A': {'blocks': 0, 'cumulative_blocks': []},
+        'Group B': {'blocks': 0, 'cumulative_blocks': []},
+        'Group C': {'blocks': 0, 'cumulative_blocks': []}
+    }
+    
+    if not os.path.exists("docs/figures"):
+        os.makedirs("docs/figures", exist_ok=True)
+
+    # -------------------------------------------------------------------------
+    # 【Group A】: Heuristic Traditional Bot
+    # -------------------------------------------------------------------------
+    print("\n🚀 Executing Group A Baseline...")
+    waf_alertness = 0.0
+    for k in range(steps):
+        u_k = 3.0  
+        waf_sensitivity = 1.0 if not (4000 <= k <= 6500) else 2.5
+        
+        waf_alertness += (u_k * 0.15 * waf_sensitivity) - COOLING_RATE
+        waf_alertness = max(0.0, waf_alertness)
+        
+        if waf_alertness >= X_MAX:
+            telemetry['Group A']['blocks'] += 1
+            waf_alertness = WAF_RESET_VAL  
+            
+        telemetry['Group A']['cumulative_blocks'].append(telemetry['Group A']['blocks'])
+
+    # -------------------------------------------------------------------------
+    # 【Group B】: Pure Algorithmic MCTS-TSP (Unconstrained)
+    # -------------------------------------------------------------------------
+    print("🚀 Executing Group B Baseline...")
+    planner = MCTSTSPPlanner()
+    current_route = []
+    waf_alertness = 0.0
+    
+    for k in range(steps):
+        if len(current_route) >= NUM_TARGETS:
+            current_route = []
+        next_target = planner.search_next_node(current_route)
+        current_route.append(next_target)
+        
+        u_k = 3.0  
+        waf_sensitivity = 1.0 if not (4000 <= k <= 6500) else 2.5
+        
+        waf_alertness += (u_k * SIG_GAIN * waf_sensitivity) - COOLING_RATE
+        waf_alertness = max(0.0, waf_alertness)
+        
+        if waf_alertness >= X_MAX:
+            telemetry['Group B']['blocks'] += 1
+            waf_alertness = 0.4
+            
+        telemetry['Group B']['cumulative_blocks'].append(telemetry['Group B']['blocks'])
+
+    # -------------------------------------------------------------------------
+    # 【Group C】: GMC Dual-Loop Constrained Autopilot
+    # -------------------------------------------------------------------------
+    print("🚀 Executing Group C (GMC Autopilot)...")
+    planner_safe = MCTSTSPPlanner()
+    current_route_safe = []
+    waf_alertness = 0.0
+    
+    for k in range(steps):
+        if len(current_route_safe) >= NUM_TARGETS:
+            current_route_safe = []
+        next_target = planner_safe.search_next_node(current_route_safe)
+        current_route_safe.append(next_target)
+        
+        # 1. Outer Loop: Mission Target rate
+        u_nominal = U_NOMINAL
+        
+        # 2. Inner Loop: Establish safety boundary via CBF
+        waf_sensitivity = 1.0 if not (4000 <= k <= 6500) else 2.5
+        
+        A_cbf = SIG_GAIN * waf_sensitivity
+        b_cbf = GAMMA_CBF * (X_MAX - waf_alertness) + COOLING_RATE
+        
+        # 3. Dynamic analytical convex optimization actuation
+        u_safe = solve_analytical_qp(u_nominal, A_cbf, b_cbf, u_min=U_MIN, u_max=U_MAX)
+        
+        # 4. State propagation
+        waf_alertness += (u_safe * SIG_GAIN * waf_sensitivity) - COOLING_RATE
+        waf_alertness = max(0.0, waf_alertness)
+        
+        if waf_alertness >= X_MAX:
+            telemetry['Group C']['blocks'] += 1
+            waf_alertness = 0.4
+            
+        telemetry['Group C']['cumulative_blocks'].append(telemetry['Group C']['blocks'])
+
+    # =============================================================================
+    # 7. Output and Plot Generation
+    # =============================================================================
+    print("\n📊 ================== SIMULATION COMPLETED ==================")
+    print(f"Group A (Traditional Bot)     - Blocks: {telemetry['Group A']['blocks']} times")
+    print(f"Group B (Unconstrained MCTS) - Blocks: {telemetry['Group B']['blocks']} times")
+    print(f"Group C (GMC Autopilot)      - Blocks: {telemetry['Group C']['blocks']} times")
+    print("=============================================================")
+    
+    # Verify environment integrity before initiating plotting
+    enforce_integrity_shields()
+    
+    plt.figure(figsize=(10, 6), dpi=150)
+    plt.plot(telemetry['Group A']['cumulative_blocks'], label='Group A: Traditional Bot', color='#e74c3c', linewidth=2)
+    plt.plot(telemetry['Group B']['cumulative_blocks'], label='Group B: Unconstrained MCTS-TSP', color='#f39c12', linewidth=2)
+    plt.plot(telemetry['Group C']['cumulative_blocks'], label='Group C: GMC MCTS-TSP-CBF-QP (Constrained)', color='#2ecc71', linewidth=2.5)
+    plt.axvspan(4000, 6500, color='gray', alpha=0.15, label='Extreme Threat Phase')
+    
+    plt.title('Project Garagara Phase II: Telemetry Comparison under Dynamic WAF Threat', fontsize=12, fontweight='bold')
+    plt.xlabel('Sequential Request Horizon (k)', fontsize=10)
+    plt.ylabel('Cumulative Detection & Block Count', fontsize=10)
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.legend(loc='upper left')
+    
+    plot_filepath = 'docs/figures/paper2_mcts_tsp_comparison.png'
+    plt.savefig(plot_filepath, bbox_inches='tight')
+    print(f"\n🎨 Saved telemetry map: {plot_filepath}")
+    plt.show()
+
+if __name__ == '__main__':
+    run_simulation()
