@@ -17,9 +17,9 @@ Our framework does not attempt to "evade" detection through heuristic obfuscatio
 ## 📂 Repository Architecture
 This repository contains the complete mathematical proofs and local numerical simulation suites developed by the **Institute of Bamboo and Cyber-Aerodynamics**[cite: 11]. The underlying theoretical frameworks are partitioned into two core publisher-ready assets:
 
-* 📄 **Paper I (Temporal & Kinematic Tuning)**: [`docs/paper1_biomimetic_evasion.md`](docs/paper1_biomimetic_evasion.md)  
+* 📄 **Paper I (Temporal & Kinematic Tuning)**: 
   _Investigates the decoupling of temporal power spectral density (PSD) using ergodic chaotic scheduling ($r=4.0$) and minimum-jerk Cubic Bézier trajectories to eliminate tracking parameters in ML-based classifiers._[cite: 9]
-* 📄 **Paper II (Topological Optimization)**: [`docs/paper2_stateful_ratelimiters.md`](docs/paper2_stateful_ratelimiters.md)  
+* 📄 **Paper II (Topological Optimization)**: 
   _Addresses multi-proxy network traversal as an NP-Hard Adversarial Time-Varying Traveling Salesperson Problem (ATV-TSP) resolved via Monte Carlo Tree Search (MCTS) and microsecond-level 1D Quadratic Programming (QP) convex filters._
 
 ---
