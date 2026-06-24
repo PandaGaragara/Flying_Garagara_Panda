@@ -4,10 +4,6 @@ Project Garagara: Phase II Dynamic Threat Wind-Tunnel Simulator
 =============================================================================
 Author: Dr. Panda Garagara & Assistant
 Architecture: MCTS-TSP Path Planner with Active Anti-Analysis Shielding
-
-SECURITY CORE:
-Active Integrity Guard (Line 30) detects runtime tracers, profiling hooks,
-and debugger attachment. Any debugging attempt instantly aborts execution.
 """
 
 import numpy as np
