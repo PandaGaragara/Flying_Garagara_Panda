@@ -3,7 +3,7 @@
 Project Garagara: Phase III Filippov Hybrid Limit-Cycle Simulator
 =============================================================================
 Author: Dr. Panda Garagara & Assistant
-Zenodo DOI: 10.5281/zenodo.20772226
+Zenodo DOI: 10.5281/zenodo.20805743
 """
 
 import numpy as np
