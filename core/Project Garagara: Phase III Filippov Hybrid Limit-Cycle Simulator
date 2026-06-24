@@ -4,15 +4,6 @@ Project Garagara: Phase III Filippov Hybrid Limit-Cycle Simulator
 =============================================================================
 Author: Dr. Panda Garagara & Assistant
 Zenodo DOI: 10.5281/zenodo.20772226
-Description:
-    Recreates the exact mathematical environment of the third paper.
-    Leverages Filippov non-smooth hybrid state reset mapping to resolve 
-    the "Circular Bootstrapping Loop" deadlocks found in Phase I & II.
-    Guarantees Input-to-State Safety (ISS) even under observer dropouts.
-
-Security Core:
-    Incorporates active timing-drift benchmarks and thread trace hooks
-    to safeguard Filippov phase trajectories against dynamic reverse engineering.
 """
 
 import numpy as np
