@@ -3,7 +3,7 @@
 Project Garagara: Phase II Dynamic Threat Wind-Tunnel Simulator
 =============================================================================
 Author: Dr. Panda Garagara & Assistant
-Architecture: MCTS-TSP Path Planner with Active Anti-Analysis Shielding
+Zenodo DOI: 10.5281/zenodo.20772226
 """
 
 import numpy as np
