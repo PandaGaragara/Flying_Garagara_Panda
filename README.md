@@ -1,6 +1,6 @@
 🚀 GMC-Autopilot: Control-Theoretic Invariance for Stochastic Impulsive Hybrid Systems
 
-Author: 嘎啦嘎啦熊貓 (Dr. Panda Garagara)
+Author: Dr. Panda Garagara
 
 Affiliation: Institute of Bamboo and Cyber-Aerodynamics
 
