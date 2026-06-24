@@ -14,7 +14,7 @@ This repository presents a deterministic control-theoretic alternative. We estab
 
 We formalize multi-node network trajectory scheduling as a constrained Adversarial Time-Varying Traveling Salesperson Problem (ATV-TSP). To resolve real-time control rates while eliminating algebraic loops within a single computational epoch, the framework deploys a dual-loop hierarchical architecture:
 
-     [ Outer Loop: Macro-Temporal Decision Layer ]
+
   MCTS-TSP Planner (Resolves ATV-TSP to output nominal command u_nominal)
                            │
                            ▼ Feedforward Command ($u_{nominal}$)
