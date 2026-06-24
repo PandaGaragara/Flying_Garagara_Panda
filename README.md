@@ -1,6 +1,6 @@
 🚀 GMC-Autopilot: Control-Theoretic Invariance for Stochastic Impulsive Hybrid Systems
 
-Author: Dr. Panda Garagara
+Author: 嘎啦嘎啦熊貓 (Dr. Panda Garagara)
 
 Affiliation: Institute of Bamboo and Cyber-Aerodynamics
 
@@ -12,42 +12,42 @@ This repository presents a deterministic control-theoretic alternative. We estab
 
 🛰️ Hierarchical Decoupling & System Topology
 
-We formalize multi-node network trajectory scheduling as a constrained Adversarial Time-Varying Traveling Salesperson Problem (ATV-TSP). To resolve real-time control rates while eliminating algebraic loops within a single computational epoch, the framework deploys a dual-loop hierarchical architecture:
+We formalize multi-node network trajectory scheduling as a constrained Adversarial Time-Varying Traveling Salesperson Problem (ATV-TSP). To resolve real-time control rates while eliminating algebraic loops within a single computational epoch, the framework deploys a dual-loop hierarchical architecture.
 
+Below is the system's topological routing rendered natively:
 
-  MCTS-TSP Planner (Resolves ATV-TSP to output nominal command u_nominal)
-                           │
-                           ▼ Feedforward Command ($u_{nominal}$)
-     [ Inner Loop: Micro-Temporal Safety Filtering ]
- ┌─────────────────────────────────────────────────────────┐
- │ 1. Asymmetric Temporal Decoupling Sequence              │
- │    Prevents algebraic loops via lower-triangular causal │
- │    operator routing.                                    │
- ├─────────────────────────────────────────────────────────┤
- │ 2. Statistical CUSUM & Supermartingale Robust Cushion   │
- │    Whitens long-range dependent noise and pre-allocates │
- │    safety margins to absorb detection latency.          │
- ├─────────────────────────────────────────────────────────┤
- │ 3. 1D CLF-CBF-QP Analytical Convex Actuator             │
- │    Enforces microsecond-level safety locks via exact,   │
- │    closed-form control solutions.                       │
- └─────────────────────────────────────────────────────────┘
-                           │
-                           ▼ Closed-Loop Control Actuation ($u^*$)
-          [ Stochastic Impulsive Hybrid System (SIHS) ]
+flowchart TD
+    %% Define styles
+    classDef layerStyle fill:#f8f9fa,stroke:#333,stroke-width:2px;
+    classDef blockStyle fill:#ffffff,stroke:#555,stroke-width:1px;
+
+    subgraph OuterLoop [Outer Loop: Macro-Temporal Decision Layer]
+        A[MCTS-TSP Planner<br/>Resolves ATV-TSP over Proxy Networks]
+    end
+
+    subgraph InnerLoop [Inner Loop: Micro-Temporal Safety Filtering]
+        B[Asymmetric Temporal Decoupling Sequence]
+        C[Statistical CUSUM Drift Observer &<br/>Supermartingale Robust Cushion]
+        D[1D CLF-CBF-QP Analytical Convex Actuator]
+        B --> C --> D
+    end
+
+    A -->|Feedforward Command: u_nominal| B
+    D -->|Closed-Loop Safe Actuation: u*| E[Stochastic Impulsive Hybrid System SIHS]
+
+    class OuterLoop,InnerLoop layerStyle;
+    class A,B,C,D,E blockStyle;
 
 
 1. Asymmetric Temporal Decoupling
 
 To prevent algebraic loops and computational lag at edge nodes, we decouple macro-temporal routing from micro-temporal safety filtration via a lower-triangular causal interface:
 
+$$u_{nominal,k} \leftarrow \arg\max_{v} \mathcal{U}_{\text{MCTS}}(s_{k|k-1})$$
 
-$$\text{Step 1: } u_{nominal,k} \leftarrow \arg\max \mathcal{U}_{MCTS}(s_{k|k-1})$$
+$$u_{k}^* \leftarrow \arg\min_{u_k} \left( \frac{1}{2}\|u_k - u_{nominal,k}\|^2 + q_u \|u_k - u_{k-1}^*\|^2 \right) \quad \text{s.t.} \quad A_{cbf}u_k \le b_{cbf} - \mathcal{D}_{delay}$$
 
-$$\text{Step 2: } u_{k}^* \leftarrow \arg\min \left( \frac{1}{2}\|u_k - u_{nominal,k}\|^2 + q_u \|u_k - u_{k-1}^*\|^2 \right) \quad \text{s.t. } A_{cbf}u_k \le b_{cbf} - \mathcal{D}_{delay}$$
-
-$$\text{Step 3: } s_{k+1|k} \leftarrow \mathcal{F}_{hybrid}(s_{k|k}, u_{k}^*)$$
-
+$$s_{k+1|k} \leftarrow \mathcal{F}_{\text{hybrid}}(s_{k|k}, u_{k}^*)$$
 
 Separating feedforward assignment and feedback registration by an asymmetric one-step temporal operator guarantees the existence, uniqueness, and immediate convergence of the control solution without computational bottlenecks.
 
@@ -59,9 +59,7 @@ Latency Absorption: During a sudden non-stationary parameter transition, the Cum
 
 Supermartingale Cushion: To prevent boundary penetration during this blind spot, we inject a pre-allocated Supermartingale Robust Cushion:
 
-
 $$\mathcal{D}_{delay} = \sum_{j=1}^{\tau_{max}} \Delta t (\eta \cdot \psi_{max} \cdot u_{max})$$
-
 
 This mathematical margin strictly dominates the real-world state drift acting upon the unobserved transition window, forcing the state evolution to behave as a discrete-time supermartingale process that asymptotically tracks a conservative invariant sub-set underneath the critical boundary.
 
@@ -91,13 +89,11 @@ The low-level filter bypasses the need for computationally heavy commercial conv
 
 $$\min_{u} \frac{1}{2} \|u - u_{nominal}\|^2$$
 
-$$\text{s.t. } A_{cbf} \cdot u \le b_{cbf}$$
+$$\text{s.t.} \quad A_{cbf} \cdot u \le b_{cbf}$$
 
 This optimization problem admits an exact, microsecond-level analytical solution of $\mathcal{O}(1)$ complexity:
 
-
 $$u^*(k) = \max\left(u_{min}, \min\left(u_{max}, u_{unbounded}\right)\right)$$
-
 
 where $u_{unbounded} = b_{cbf}/A_{cbf}$ if $A_{cbf}\cdot u_{nominal} > b_{cbf}$, and $u_{nominal}$ otherwise.
 
