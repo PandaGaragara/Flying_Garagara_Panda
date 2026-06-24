@@ -4,11 +4,6 @@ Project Garagara: Phase I Academic Flight Data Engine (Pure Reproducibility Vers
 ==================================================================================
 Author: Dr. Panda Garagara & Assistant
 Zenodo DOI: 10.5281/zenodo.20710474
-Description: Recreates the exact mathematical environment of the first paper.
-             Features chaotic delay schedulers and meta-adaptive Kalman filtering.
-
-Academic Guard: Incorporates active timing-based anti-reverse engineering and 
-                environment tracing checks without altering the PRNG state.
 """
 
 import sqlite3
