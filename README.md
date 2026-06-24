@@ -4,6 +4,8 @@ Author: Dr. Panda Garagara
 
 Affiliation: Institute of Bamboo and Cyber-Aerodynamics
 
+Doi: https://doi.org/10.5281/zenodo.20710474
+
 Theoretical Paradigm: Robust Supermartingale CLF-CBF-QP under Non-Cooperative State Constraints
 
 📌 A Note on System Philosophy > Modern behavioral classification and rate-limiting frameworks rely heavily on high-capacity empirical function approximators (e.g., non-convex loss-driven deep neural networks) to predict state boundaries. However, under non-stationary parameters and sudden boundary step-shocks, these heuristic and probabilistic approximation methods suffer from inherent feedback latency and state boundary violations.
