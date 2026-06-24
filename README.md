@@ -14,7 +14,7 @@ This repository presents a deterministic control-theoretic alternative. We estab
 
 We formalize multi-node network trajectory scheduling as a constrained Adversarial Time-Varying Traveling Salesperson Problem (ATV-TSP). To resolve real-time control rates while eliminating algebraic loops within a single computational epoch, the framework deploys a dual-loop hierarchical architecture.
 
-The universal, cross-platform system routing is detailed below:
+Below is the system's topological routing rendered natively:
 
     [ Outer Loop: Macro-Temporal Decision Layer ]
     ┌──────────────────────────────────────────────┐
@@ -53,13 +53,11 @@ The universal, cross-platform system routing is detailed below:
 
 To prevent algebraic loops and computational lag at edge nodes, we decouple macro-temporal routing from micro-temporal safety filtration via a lower-triangular causal interface:
 
-Step 1 (Feedforward Nominal Assignment): u_nominal(k) = argmax [ U_MCTS( s(k|k-1) ) ]
+$$u_{nominal,k} \leftarrow \arg\max_{v} \mathcal{U}_{\text{MCTS}}(s_{k|k-1})$$
 
-Step 2 (Micro-Temporal Optimization): u*(k) = argmin [ 0.5 * || u(k) - u_nominal(k) ||² + q_u * || u(k) - u*(k-1) ||² ]
+$$u_{k}^* \leftarrow \arg\min_{u_k} \left( \frac{1}{2}\|u_k - u_{nominal,k}\|^2 + q_u \|u_k - u_{k-1}^*\|^2 \right) \quad \text{s.t.} \quad A_{cbf}u_k \le b_{cbf} - \mathcal{D}_{delay}$$
 
-subject to: A_cbf * u(k) <= b_cbf - D_delay
-
-Step 3 (Hybrid State Registration): s(k+1|k) = F_hybrid( s(k|k), u*(k) )
+$$s_{k+1|k} \leftarrow \mathcal{F}_{\text{hybrid}}(s_{k|k}, u_{k}^*)$$
 
 Separating feedforward assignment and feedback registration by an asymmetric one-step temporal operator guarantees the existence, uniqueness, and immediate convergence of the control solution without computational bottlenecks.
 
@@ -67,11 +65,11 @@ Separating feedforward assignment and feedback registration by an asymmetric one
 
 To protect the continuous safe flow-set against high-amplitude sudden impulse shocks, the inner-loop Control Barrier Function (CBF) incorporates a statistical drift observer:
 
-Latency Absorption: During a sudden non-stationary parameter transition, the Cumulative Sum (CUSUM) drift observer experiences an inherent statistical accumulation lag of up to tau_max = 3 steps.
+Latency Absorption: During a sudden non-stationary parameter transition, the Cumulative Sum (CUSUM) drift observer experiences an inherent statistical accumulation lag of up to $\tau_{max} = 3$ steps.
 
 Supermartingale Cushion: To prevent boundary penetration during this blind spot, we inject a pre-allocated Supermartingale Robust Cushion:
 
-D_delay = Sum_{from j=1 to tau_max} [ delta_t * ( eta * psi_max * u_max ) ]
+$$\mathcal{D}_{delay} = \sum_{j=1}^{\tau_{max}} \Delta t (\eta \cdot \psi_{max} \cdot u_{max})$$
 
 This mathematical margin strictly dominates the real-world state drift acting upon the unobserved transition window, forcing the state evolution to behave as a discrete-time supermartingale process that asymptotically tracks a conservative invariant sub-set underneath the critical boundary.
 
@@ -79,21 +77,19 @@ This mathematical margin strictly dominates the real-world state drift acting up
 
 When facing active, memory-driven non-cooperative classifiers that employ cross-layer fingerprint correlation tracking, we model the active parameter resets as a Stochastic Impulsive Hybrid System (SIHS).
 
-1. Ultimate Admissible Resilience Infimum (m_max)
+1. Ultimate Admissible Resilience Infimum ($m_{max}$)
 
 Unlike empirical strategies that falsely assume state boundaries can be preserved under infinite parameter adjustments, Dr. Panda Garagara (嘎啦嘎啦熊貓) derives the exact analytical ceiling of the systemic capacity limit:
 
-m_max = floor( log_{gamma_punish} [ x_trigger / ( delta_0 * x_max ) ] )
+$$m_{max} = \left\lfloor \log_{\gamma_{punish}} \left( \frac{x_{trigger}}{\delta_{0} x_{max}} \right) \right\rfloor$$
 
-Beyond this collapse boundary, the geometric intersection of the Control Barrier manifold and physical actuator limits degrades into a null set. To prevent flow-set vacuum deadlocks, the controller preemptively activates a Zero-Flow Active Safe Hold (u(k) = 0.0)*, preserving strict hybrid forward invariance.
+Beyond this collapse boundary, the geometric intersection of the Control Barrier manifold and physical actuator limits degrades into a null set. To prevent flow-set vacuum deadlocks ($\mathcal{C}_{flow} = \emptyset$), the controller preemptively activates a Zero-Flow Active Safe Hold ($u^*_k = 0.0$), preserving strict hybrid forward invariance.
 
 2. Topological Zeno Behavioral Exclusion
 
-In physical actuators, pathologically high-frequency sliding limit cycles (Zeno anomalies) lead to actuator fatigue and system chattering. We prove that our hybrid system exhibits a strictly positive parametric minimum dwell-time tau_D(m) between consecutive discrete transitions:
+In physical actuators, pathologically high-frequency sliding limit cycles (Zeno anomalies) lead to actuator fatigue and system chattering. We prove that our hybrid system exhibits a strictly positive parametric minimum dwell-time $\tau_D(m)$ between consecutive discrete transitions:
 
-tau_D(m) >= [ x_trigger - delta_evasion(m) * x_max ] / [ delta_t * ( eta * psi_max * u_max - d ) ] > 0
-
-for all m <= m_max
+$$\tau_D(m) \ge \frac{x_{trigger} - \delta_{evasion}(m)x_{max}}{\Delta t (\eta \psi_{max} u_{max} - d)} > 0, \quad \forall m \le m_{max}$$
 
 This proof mathematically guarantees that infinite discrete jumps within a compact time interval are impossible, ensuring exceptional system stability compared to empirical, heuristic trial-and-error strategies.
 
@@ -101,21 +97,21 @@ This proof mathematically guarantees that infinite discrete jumps within a compa
 
 The low-level filter bypasses the need for computationally heavy commercial convex solvers by exploiting the 1D nature of the CLF-CBF-QP formulation:
 
-Minimize: 0.5 * || u - u_nominal ||²
+$$\min_{u} \frac{1}{2} \|u - u_{nominal}\|^2$$
 
-subject to: A_cbf * u <= b_cbf
+$$\text{s.t.} \quad A_{cbf} \cdot u \le b_{cbf}$$
 
-This optimization problem admits an exact, microsecond-level analytical solution of O(1) complexity:
+This optimization problem admits an exact, microsecond-level analytical solution of $\mathcal{O}(1)$ complexity:
 
-u*(k) = max( u_min, min( u_max, u_unbounded ) )
+$$u^*(k) = \max\left(u_{min}, \min\left(u_{max}, u_{unbounded}\right)\right)$$
 
-where u_unbounded = b_cbf / A_cbf if A_cbf * u_nominal > b_cbf, and u_nominal otherwise.
+where $u_{unbounded} = b_{cbf}/A_{cbf}$ if $A_{cbf}\cdot u_{nominal} > b_{cbf}$, and $u_{nominal}$ otherwise.
 
 This mathematical simplification allows the complete safety-critical control loop to run on resource-constrained embedded hardware, such as Pixhawk running NuttX RTOS, without introducing computational latency jitter.
 
 📊 Telemetry and Numerical Verification
 
-To validate our control-theoretic assertions, we executed a 10,000-step sequential stress test within a dynamic, non-stationary simulation wind-tunnel. An unmodeled non-linear neural network simulator was used to represent the non-cooperative environment. Between steps 4,000 <= k <= 6,500, the environment injected an "Extreme Threat Phase" where classifier sensitivity psi(k) instantly scaled by 250%.
+To validate our control-theoretic assertions, we executed a 10,000-step sequential stress test within a dynamic, non-stationary simulation wind-tunnel. An unmodeled non-linear neural network simulator was used to represent the non-cooperative environment. Between steps $4,000 \le k \le 6,500$, the environment injected an "Extreme Threat Phase" where classifier sensitivity $\psi(k)$ instantly scaled by 250%.
 
 Invariant Evasion Telemetry (10,000 Steps)
 
@@ -159,7 +155,7 @@ Rejects artificial, non-physical 90-degree right angles or chaotic relay-style c
 
 Implements a smooth, finite 2-step decay phase directly corresponding to the statistical accumulation horizon of the CUSUM drift observer.
 
-Successfully dampens mathematical oscillations under high-frequency noise background by deploying a velocity variation penalty (q_u = 2.5), stabilizing at a non-oscillatory buffer zone and recovering via the CLF interface once the transient environmental shock subsides.
+Successfully dampens mathematical oscillations under high-frequency noise background by deploying a velocity variation penalty ($q_u = 2.5$), stabilizing at a non-oscillatory buffer zone and recovering via the CLF interface once the transient environmental shock subsides.
 
 🔐 Source Disclosure & Intellectual Property Protection
 
