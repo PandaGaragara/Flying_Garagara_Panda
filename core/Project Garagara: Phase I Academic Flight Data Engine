@@ -25,24 +25,17 @@ DB_NAME = "garagara_academic_flight_data.db"
 # =============================================================================
 
 def enforce_integrity_shields():
-    """
-    Scans execution environment to detect profiling hooks or debuggers.
-    Uses purely deterministic computations to avoid shifting Python's random state.
-    """
-    # 1. Check for active Python trace hooks (e.g., PDB, VS Code debugging)
+
     if sys.gettrace() is not None:
         print("\n[!] SECURITY EXCEPTION: Active trace hook detected.")
         print("    Dynamic analysis of ACS-KF state variables is prohibited.")
         sys.exit(0)
 
-    # 2. Check for unauthorized debugging modules in memory
     forbidden_modules = {'pydevd', 'pdb', 'IPython.core.debugger', 'bdb'}
     if forbidden_modules.intersection(sys.modules.keys()):
         print("\n[!] SECURITY EXCEPTION: Unauthorized runtime debugging module loaded.")
         sys.exit(0)
 
-    # 3.timing-drift benchmark (Breakpoint detection)
-    # Evaluates standard math operations. Execution > 50ms implies single-step breakpoint interception.
     t0 = time.perf_counter()
     x = 0.0
     for i in range(10000):
