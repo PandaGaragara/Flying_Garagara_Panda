@@ -2,7 +2,7 @@
 
 ---------
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![DOI: 10.5281/zenodo.20710474](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20710474-blue.svg?style=flat-square)](https://doi.org/10.5281/zenodo.20710474)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20805743.svg)](https://doi.org/10.5281/zenodo.20805743)
 [![Core: Flight-Control](https://img.shields.io/badge/Core-Aerospace--Grade--Control-indigo.svg?style=flat-square)]()
 [![Status: Maintained](https://img.shields.io/badge/Status-Asynchronous--Broadcast-teal.svg?style=flat-square)]()
 ---------
