@@ -176,7 +176,6 @@ Cumulative Monitor Triggers
    [────────────────────────────────────────────────────────────────────────]
    ██████████████████  GMC Autopilot (Group C & D: Absolute 0 Saturation Line) ██████████████████
 
-
 (The high-resolution vector plot is automatically rendered and exported to garagara_unified_survival_curve.png upon running the sandbox).
 
 🔐 6. Source Disclosure & Intellectual Property Policy
