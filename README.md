@@ -175,11 +175,11 @@ pip install numpy matplotlib
 Run Unified Benchmark Sandbox
 Bash
 
-python garagara_unified_autopilot.py
+python Project Garagara: Unified Meta-Cognitive Autopilot Engine.py
 
-Creates garagara_unified_telemetry.db and renders the exact publication comparative vector plot garagara_unified_survival_curve.png directly to your Workspace and Desktop.
+Creates garagara_unified_telemetry.db and renders the exact publication comparative vector plot Project Garagara: Unified Meta-Cognitive Autopilot Engine.pngg directly to your Workspace and Desktop.
 🏛️ Citation & BibTeX
-程式碼片段
+
 
 @software{garagara_unified_2026,
   author    = {Dr. Panda Garagara and Assistant},
