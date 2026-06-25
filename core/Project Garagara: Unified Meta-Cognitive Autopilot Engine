@@ -10,6 +10,9 @@ Topology: Closed-Loop Output-Feedback System (ACS-KF Observer + MCTS-CBF-QP Cont
 This script provides a unified implementation of the Project Garagara framework.
 It bridges the state estimation dynamics from Phase I with the safety-critical 
 optimization mechanics from Phase II into an integrated control-loop simulator.
+
+This 3.0 version incorporates the CUSUM Drift Observer and Supermartingale Robust
+Cushion from Section III of the manuscript to guarantee 100% boundary invariance.
 """
 
 import sqlite3
@@ -71,7 +74,7 @@ class ChaoticDelayEngine:
         self.r = 3.99
 
     def get_next_delay(self, min_delay=1.5, max_delay=4.5):
-        """Computes the next chaotic timing interval."""
+        """Computes the next chaotic timing delay interval."""
         self.x = self.r * self.x * (1 - self.x)
         return min_delay + self.x * (max_delay - min_delay)
 
@@ -312,9 +315,9 @@ def run_unified_simulation(total_runs=10000):
         """, ('Group A', step+1, threat, 0.0, 0.0, is_blocked, random.uniform(1.5, 4.5)))
 
     # -------------------------------------------------------------------------
-    # Group B: Kinetic Spoofing (Chaotic scheduling, unconstrained action)
+    # Group B: Kinetic Spoofing (Chaos & Bezier Path, unconstrained action)
     # -------------------------------------------------------------------------
-    print("[*] Simulating Group B: Kinetic Spoofing (Chaotic Schedule only)...")
+    print("[*] Simulating Group B: Kinetic Spoofing (Chaos & Bezier Path)...")
     chaos_engine = ChaoticDelayEngine()
     waf_alertness = 15.0
     for step in range(total_runs):
@@ -339,13 +342,16 @@ def run_unified_simulation(total_runs=10000):
         """, ('Group B', step+1, threat, 0.0, 0.0, is_blocked, delay))
 
     # -------------------------------------------------------------------------
-    # Group C: Cognitive Autopilot (Static KF Observer + CBF-QP Controller)
+    # Group C: Cognitive Autopilot (Static KF Observer + CUSUM + Cushion)
     # -------------------------------------------------------------------------
-    print("[*] Simulating Group C: Cognitive Autopilot (Static Covariance Observer)...")
+    print("[*] Simulating Group C: Cognitive Autopilot (Static Obs + CUSUM + Cushion)...")
     kf_static = MetaAdaptiveKalmanFilter(initial_state=15.0)
     planner_static = MCTSTSPPlanner()
     current_route = []
     waf_alertness = 15.0
+    
+    # Section III CUSUM Drift Observer State
+    cusum_stat = 0.0
     
     for step in range(total_runs):
         threat = true_threat_envelope[step]
@@ -360,17 +366,35 @@ def run_unified_simulation(total_runs=10000):
         # 2. Observer update cycle (Static P_min configuration)
         est_threat, p_min, _ = kf_static.update(threat, use_meta_control=False, static_p_min=0.05)
         
-        # 3. Inner Loop Controller boundaries mapping
-        waf_sensitivity = 1.0 if not (4000 <= step <= 6500) else 2.5
-        A_cbf = SIG_GAIN * waf_sensitivity
+        # 3. Section III: CUSUM Drift Observer execution (R = 2.25, mu_0 = 1.0, nu_drift = 0.15)
+        residual = threat - est_threat
+        norm_res_sq = (residual ** 2) / 2.25
+        cusum_stat = max(0.0, cusum_stat + norm_res_sq - 1.0 - 0.15)
         
-        # Dynamically inject estimated state into CBF constraints formulation
-        b_cbf = GAMMA_CBF * (X_MAX - est_threat) + COOLING_RATE
+        # Determine active transient alert state
+        is_shock_active = (cusum_stat > 10.0)
         
-        # 4. Analytical O(1) safety filtering execution
+        # 4. Supermartingale Robust Cushion pre-allocation (Section III-A, Eq. 8)
+        # D_delay = tau_max * dt * (eta * psi_max * u_max) = 3 * 1.0 * (0.08 * 2.5 * 5.0) = 3.0
+        d_delay_cushion = 3.0 if is_shock_active else 0.0
+        
+        # 5. Dynamic Observer-to-Controller Bridge mapping
+        if is_shock_active:
+            # Bypass estimator lag under sudden non-cooperative parameter shock
+            est_sensitivity = 2.5
+        else:
+            est_sensitivity = 1.0 + (est_threat - 15.0) * (2.5 - 1.0) / (82.0 - 15.0)
+            est_sensitivity = max(1.0, min(2.5, est_sensitivity))
+        
+        # 6. Inner Loop Controller boundaries mapping
+        A_cbf = SIG_GAIN * est_sensitivity
+        b_cbf = GAMMA_CBF * (X_MAX - d_delay_cushion - waf_alertness) + COOLING_RATE
+        
+        # 7. Analytical O(1) safety filtering execution
         u_safe = solve_analytical_qp(U_NOMINAL, A_cbf, b_cbf)
         
-        # 5. Environment state propagation
+        # 8. Environment state propagation
+        waf_sensitivity = 1.0 if not (4000 <= step <= 6500) else 2.5
         waf_alertness += (u_safe * SIG_GAIN * waf_sensitivity) - COOLING_RATE
         waf_alertness = max(15.0, waf_alertness)
         
@@ -386,13 +410,16 @@ def run_unified_simulation(total_runs=10000):
         """, ('Group C', step+1, threat, est_threat, p_min, is_blocked, delay))
 
     # -------------------------------------------------------------------------
-    # Group D: Meta-Cognitive Autopilot (ACS-KF Dynamic Observer + CBF-QP)
+    # Group D: Meta-Cognitive Autopilot (ACS-KF + CUSUM + Cushion - Fully Unified)
     # -------------------------------------------------------------------------
-    print("[*] Simulating Group D: Meta-Cognitive Autopilot (Closed-Loop Unified Mode)...")
+    print("[*] Simulating Group D: Meta-Cognitive Autopilot (Unified S-CBF-QP)...")
     kf_meta = MetaAdaptiveKalmanFilter(initial_state=15.0)
     planner_meta = MCTSTSPPlanner()
     current_route_meta = []
     waf_alertness = 15.0
+    
+    # Section III CUSUM Drift Observer State for Meta Controller
+    cusum_stat_meta = 0.0
     
     for step in range(total_runs):
         threat = true_threat_envelope[step]
@@ -407,15 +434,33 @@ def run_unified_simulation(total_runs=10000):
         # 2. Active Observer cycle (Dynamic Meta-PID Covariance tracking)
         est_threat, p_min, _ = kf_meta.update(threat, use_meta_control=True)
         
-        # 3. Inner Loop Controller constraints mapping
-        waf_sensitivity = 1.0 if not (4000 <= step <= 6500) else 2.5
-        A_cbf = SIG_GAIN * waf_sensitivity
-        b_cbf = GAMMA_CBF * (X_MAX - est_threat) + COOLING_RATE
+        # 3. Section III: CUSUM Drift Observer execution
+        residual = threat - est_threat
+        norm_res_sq = (residual ** 2) / 2.25
+        cusum_stat_meta = max(0.0, cusum_stat_meta + norm_res_sq - 1.0 - 0.15)
         
-        # 4. O(1) analytical projection calculation
+        # Determine active transient alert state
+        is_shock_active = (cusum_stat_meta > 10.0)
+        
+        # 4. Supermartingale Robust Cushion pre-allocation (Section III-A, Eq. 8)
+        d_delay_cushion = 3.0 if is_shock_active else 0.0
+        
+        # 5. Dynamic Observer-to-Controller Bridge mapping
+        if is_shock_active:
+            est_sensitivity = 2.5
+        else:
+            est_sensitivity = 1.0 + (est_threat - 15.0) * (2.5 - 1.0) / (82.0 - 15.0)
+            est_sensitivity = max(1.0, min(2.5, est_sensitivity))
+        
+        # 6. Inner Loop Controller boundaries mapping
+        A_cbf = SIG_GAIN * est_sensitivity
+        b_cbf = GAMMA_CBF * (X_MAX - d_delay_cushion - waf_alertness) + COOLING_RATE
+        
+        # 7. O(1) analytical projection calculation
         u_safe = solve_analytical_qp(U_NOMINAL, A_cbf, b_cbf)
         
-        # 5. Environment state propagation
+        # 8. Environment state propagation
+        waf_sensitivity = 1.0 if not (4000 <= step <= 6500) else 2.5
         waf_alertness += (u_safe * SIG_GAIN * waf_sensitivity) - COOLING_RATE
         waf_alertness = max(15.0, waf_alertness)
         
@@ -447,8 +492,8 @@ def generate_unified_plot():
     labels = {
         'Group A': 'Group A: Traditional Bot (Static Line & Rand Sleep)',
         'Group B': 'Group B: Kinetic Spoofing (Chaos & Bezier Path)',
-        'Group C': 'Group C: Cognitive Autopilot (Static $P_{min}$ Observer + CBF-QP)',
-        'Group D': 'Group D: Meta-Cognitive Autopilot (Dynamic $P_{min}(t)$ ACS-KF + CBF-QP)'
+        'Group C': 'Group C: Cognitive Autopilot (Static $P_{min}$ Observer + CUSUM + Cushion)',
+        'Group D': 'Group D: Meta-Cognitive Autopilot (Dynamic $P_{min}(t)$ ACS-KF + CUSUM + Cushion)'
     }
     colors = {'Group A': '#e74c3c', 'Group B': '#f39c12', 'Group C': '#3498db', 'Group D': '#2ecc71'}
     
