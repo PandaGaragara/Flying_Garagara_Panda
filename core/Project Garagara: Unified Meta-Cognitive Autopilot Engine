@@ -483,5 +483,3 @@ def generate_unified_plot():
 if __name__ == "__main__":
     run_unified_simulation(10000)
     generate_unified_plot()
-```
-eof
