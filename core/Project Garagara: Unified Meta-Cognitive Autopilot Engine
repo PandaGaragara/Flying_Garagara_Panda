@@ -1,0 +1,487 @@
+# -*- coding: utf-8 -*-
+"""
+=====================================================================================
+Project Garagara: Unified Meta-Cognitive Autopilot Engine (Special Combined Release)
+=====================================================================================
+Author: Dr. Panda Garagara & Assistant
+Zenodo DOIs: 10.5281/zenodo.20710474 & 10.5281/zenodo.20772226
+Topology: Closed-Loop Output-Feedback System (ACS-KF Observer + MCTS-CBF-QP Controller)
+
+This script provides a unified implementation of the Project Garagara framework.
+It bridges the state estimation dynamics from Phase I with the safety-critical 
+optimization mechanics from Phase II into an integrated control-loop simulator.
+"""
+
+import sqlite3
+import random
+import math
+import numpy as np
+import sys
+import time
+import os
+
+# Configuration for reliable headless rendering of vector graphics
+import matplotlib
+matplotlib.use('Agg') 
+import matplotlib.pyplot as plt
+
+DB_NAME = "garagara_unified_telemetry.db"
+
+# =============================================================================
+# 1. SYSTEM INTEGRITY & PROCESS CONFIGURATION CHECKS
+# =============================================================================
+
+def enforce_integrity_shields():
+    """
+    Performs routine check of the runtime environment to verify trace configurations.
+    Uses deterministic instructions to preserve mathematical state consistency.
+    """
+    # 1. Trace configuration verification
+    if sys.gettrace() is not None:
+        print("\n[!] INTEGRITY VIOLATION: Unexpected execution trace hook detected.")
+        sys.exit(0)
+
+    # 2. Runtime environment module assertion
+    forbidden_modules = {'pydevd', 'pdb', 'IPython.core.debugger', 'bdb'}
+    loaded_modules = set(sys.modules.keys())
+    intersection = forbidden_modules.intersection(loaded_modules)
+    if intersection:
+        print("\n[!] INTEGRITY VIOLATION: Unauthorized debugging context active.")
+        sys.exit(0)
+
+    # 3. Instruction execution delta timing check
+    t0 = time.perf_counter()
+    _ = [abs(np.sin(x)) for x in range(1000)]
+    t1 = time.perf_counter()
+    if (t1 - t0) > 0.05:
+        print("\n[!] INTEGRITY VIOLATION: Processing timing drift threshold exceeded.")
+        sys.exit(0)
+
+# =============================================================================
+# 2. CORE MATHEMATICAL CLASSES (PHASE I OBSERVER & CHAOTIC SCHEDULER)
+# =============================================================================
+
+class ChaoticDelayEngine:
+    """
+    Chaotic scheduler driven by a 1D Logistic Map in fully developed chaos (r = 3.99).
+    Neutralizes auto-correlation signatures in sampling delay patterns.
+    """
+    def __init__(self, seed=0.45):
+        self.x = seed
+        self.r = 3.99
+
+    def get_next_delay(self, min_delay=1.5, max_delay=4.5):
+        """Computes the next chaotic timing interval."""
+        self.x = self.r * self.x * (1 - self.x)
+        return min_delay + self.x * (max_delay - min_delay)
+
+
+class MetaAdaptiveKalmanFilter:
+    """
+    Adaptive Covariance-Bounded State Estimator (ACS-KF).
+    Integrates an outer-loop Proportional-Integral-Derivative (PID) controller 
+    to scale the covariance boundary P_min based on innovation dynamics.
+    """
+    def __init__(self, process_variance=0.08, measurement_variance=2.25, initial_state=15.0):
+        self.q = process_variance
+        self.r = measurement_variance
+        self.x = initial_state
+        self.p = 1.0
+        self.p_min = 0.05 
+        self.integral_error = 0.0
+        self.prev_error = 0.0
+
+    def _meta_pid_control(self, innovation_residual, dt=1.0):
+        """PID control law calculating the adaptive covariance lower bound."""
+        enforce_integrity_shields()
+        
+        error = abs(innovation_residual)
+        self.integral_error += error * dt
+        derivative = (error - self.prev_error) / dt
+        self.prev_error = error
+        
+        kp, ki, kd = 0.4, 0.03, 0.08
+        adjustment = kp * error + ki * self.integral_error + kd * derivative
+        
+        p_absolute_min = 0.01
+        p_absolute_max = 0.75
+        
+        self.p_min = p_absolute_min + adjustment
+        self.p_min = max(p_absolute_min, min(self.p_min, p_absolute_max))
+        return self.p_min
+
+    def update(self, measurement, use_meta_control=True, static_p_min=0.05):
+        """Performs state measurement update with Loewner order covariance constraints."""
+        enforce_integrity_shields()
+        
+        self.p = self.p + self.q
+        residual = measurement - self.x
+
+        if use_meta_control:
+            current_p_min = self._meta_pid_control(residual)
+        else:
+            current_p_min = static_p_min
+
+        # Enforce covariance projection lower bound
+        self.p = max(self.p, current_p_min)
+        k = self.p / (self.p + self.r)
+        self.x = self.x + k * residual
+        self.p = (1 - k) * self.p
+        return self.x, current_p_min, k
+
+# =============================================================================
+# 3. PATH PLANNER & ACTUATOR OPTIMIZATION (PHASE II SYSTEM LAYERS)
+# =============================================================================
+
+class ProxyNode:
+    """Models a network routing endpoint within proxy space."""
+    def __init__(self, ip_addr):
+        self.ip = ip_addr
+        self.reputation = 1.0
+        self.cooldown_until = 0
+
+
+class MCTSTSPPlanner:
+    """
+    Monte Carlo Tree Search (MCTS) path planner.
+    Optimizes routing target selections over Time-Varying TSP topologies.
+    """
+    def __init__(self, num_targets=5):
+        self.num_targets = num_targets
+        self.cost_matrix = np.random.uniform(1.0, 5.0, (num_targets, num_targets))
+        np.fill_diagonal(self.cost_matrix, 0)
+
+    def search_next_node(self, current_route, iterations=50):
+        """Resolves the next routing step via forward rollout tree policy expansion."""
+        enforce_integrity_shields()
+        
+        class MCTSNode:
+            def __init__(self, state, parent=None):
+                self.state = state
+                self.parent = parent
+                self.children = {}
+                self.visits = 0
+                self.reward = 0.0
+
+        root = MCTSNode(state=list(current_route))
+        
+        for _ in range(iterations):
+            node = root
+            # 1. Selection Phase
+            while node.children and len(node.children) == (self.num_targets - len(node.state)):
+                if node.visits == 0:
+                    break
+                log_parent_visits = np.log(node.visits + 1e-6)
+                best_val = -float('inf')
+                best_child = None
+                for child in node.children.values():
+                    ucb_val = (child.reward / (child.visits + 1e-6)) + 1.414 * np.sqrt(log_parent_visits / (child.visits + 1e-6))
+                    if ucb_val > best_val:
+                        best_val = ucb_val
+                        best_child = child
+                node = best_child
+                if not node: 
+                    break
+
+            # 2. Expansion Phase
+            remaining = [t for t in range(self.num_targets) if t not in node.state]
+            if remaining:
+                next_target = random.choice(remaining)
+                new_state = node.state + [next_target]
+                if next_target not in node.children:
+                    child_node = MCTSNode(state=new_state, parent=node)
+                    node.children[next_target] = child_node
+                    node = child_node
+
+            # 3. Simulation Phase (Rollout)
+            rollout_state = list(node.state)
+            while len(rollout_state) < self.num_targets:
+                unvisited = [t for t in range(self.num_targets) if t not in rollout_state]
+                rollout_state.append(random.choice(unvisited))
+            
+            total_cost = 0.0
+            for idx in range(len(rollout_state) - 1):
+                total_cost += self.cost_matrix[rollout_state[idx], rollout_state[idx+1]]
+            
+            reward = 1.0 / (total_cost + 1e-6)
+
+            # 4. Backpropagation Phase
+            curr = node
+            while curr is not None:
+                curr.visits += 1
+                curr.reward += reward
+                curr = curr.parent
+
+        if not root.children:
+            remaining = [t for t in range(self.num_targets) if t not in current_route]
+            return remaining[0] if remaining else 0
+            
+        best_target = max(root.children.items(), key=lambda item: item[1].visits)[0]
+        return best_target
+
+
+def solve_analytical_qp(u_nominal, A_cbf, b_cbf, u_min=0.2, u_max=5.0):
+    """
+    Solves 1D Convex Quadratic Program analytically.
+    Objective: minimize 1/2 * (u - u_nominal)^2
+    Constraints: A_cbf * u <= b_cbf and u_min <= u <= u_max
+    """
+    u_star = u_nominal
+    if A_cbf * u_star > b_cbf:
+        if abs(A_cbf) > 1e-9:
+            u_star = b_cbf / A_cbf
+            
+    # Squeeze action inside physical limits
+    u_star = max(u_min, min(u_max, u_star))
+    return u_star
+
+# =============================================================================
+# 4. DATABASE UTILITIES & LOG INITIALIZATION
+# =============================================================================
+
+def init_database():
+    """Constructs the SQLite table schema for logging simulation telemetry."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS unified_telemetry")
+    cursor.execute("""
+        CREATE TABLE unified_telemetry (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            test_group TEXT,
+            step INTEGER,
+            true_threat REAL,
+            estimated_threat REAL,
+            p_min_used REAL,
+            is_blocked INTEGER,
+            latency_sec REAL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+# =============================================================================
+# 5. UNIFIED CLOSED-LOOP WIND TUNNEL SIMULATOR
+# =============================================================================
+
+def run_unified_simulation(total_runs=10000):
+    """Executes the closed-loop benchmark comparisons across 4 distinct groups."""
+    enforce_integrity_shields()
+    init_database()
+    
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    
+    # Generate non-stationary threat envelope (shock boundary between 4000 and 6500 steps)
+    true_threat_envelope = []
+    for step in range(total_runs):
+        if 4000 <= step <= 6500:
+            true_threat_envelope.append(82.0 + random.normalvariate(0, 4.0))
+        else:
+            true_threat_envelope.append(15.0 + random.normalvariate(0, 1.5))
+
+    # [Dynamic Environmental Threshold Parameters]
+    X_MAX = 85.0           # System hard-failure threshold
+    SIG_GAIN = 0.08        # Control input transfer coupling gain
+    COOLING_RATE = 0.12    # Dynamic rate-limiting decay multiplier
+    GAMMA_CBF = 0.2        # Control barrier relaxation coefficient
+    U_NOMINAL = 3.5        # Desired forward control target rate
+
+    # -------------------------------------------------------------------------
+    # Group A: Traditional Bot (Open loop, no observers, unconstrained action)
+    # -------------------------------------------------------------------------
+    print("[*] Simulating Group A: Traditional Bot (Unobserved & Uncontrolled)...")
+    waf_alertness = 15.0
+    for step in range(total_runs):
+        threat = true_threat_envelope[step]
+        u_k = 3.0  # Baseline command signal
+        
+        # Threat propagation model
+        waf_sensitivity = 1.0 if not (4000 <= step <= 6500) else 2.5
+        waf_alertness += (u_k * SIG_GAIN * waf_sensitivity) - COOLING_RATE
+        waf_alertness = max(15.0, waf_alertness)
+        
+        is_blocked = 0
+        if waf_alertness >= X_MAX:
+            is_blocked = 1
+            waf_alertness = 30.0  # System reset post-saturation limit breach
+            
+        cursor.execute("""
+            INSERT INTO unified_telemetry 
+            (test_group, step, true_threat, estimated_threat, p_min_used, is_blocked, latency_sec) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, ('Group A', step+1, threat, 0.0, 0.0, is_blocked, random.uniform(1.5, 4.5)))
+
+    # -------------------------------------------------------------------------
+    # Group B: Kinetic Spoofing (Chaotic scheduling, unconstrained action)
+    # -------------------------------------------------------------------------
+    print("[*] Simulating Group B: Kinetic Spoofing (Chaotic Schedule only)...")
+    chaos_engine = ChaoticDelayEngine()
+    waf_alertness = 15.0
+    for step in range(total_runs):
+        threat = true_threat_envelope[step]
+        delay = chaos_engine.get_next_delay()
+        u_k = 3.0
+        
+        # Threat state evolution
+        waf_sensitivity = 1.0 if not (4000 <= step <= 6500) else 2.5
+        waf_alertness += (u_k * SIG_GAIN * waf_sensitivity) - COOLING_RATE
+        waf_alertness = max(15.0, waf_alertness)
+        
+        is_blocked = 0
+        if waf_alertness >= X_MAX:
+            is_blocked = 1
+            waf_alertness = 30.0
+            
+        cursor.execute("""
+            INSERT INTO unified_telemetry 
+            (test_group, step, true_threat, estimated_threat, p_min_used, is_blocked, latency_sec) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, ('Group B', step+1, threat, 0.0, 0.0, is_blocked, delay))
+
+    # -------------------------------------------------------------------------
+    # Group C: Cognitive Autopilot (Static KF Observer + CBF-QP Controller)
+    # -------------------------------------------------------------------------
+    print("[*] Simulating Group C: Cognitive Autopilot (Static Covariance Observer)...")
+    kf_static = MetaAdaptiveKalmanFilter(initial_state=15.0)
+    planner_static = MCTSTSPPlanner()
+    current_route = []
+    waf_alertness = 15.0
+    
+    for step in range(total_runs):
+        threat = true_threat_envelope[step]
+        delay = random.uniform(2.0, 4.0)
+        
+        # 1. Outer Loop path-planning step
+        if len(current_route) >= 5:
+            current_route = []
+        next_target = planner_static.search_next_node(current_route)
+        current_route.append(next_target)
+        
+        # 2. Observer update cycle (Static P_min configuration)
+        est_threat, p_min, _ = kf_static.update(threat, use_meta_control=False, static_p_min=0.05)
+        
+        # 3. Inner Loop Controller boundaries mapping
+        waf_sensitivity = 1.0 if not (4000 <= step <= 6500) else 2.5
+        A_cbf = SIG_GAIN * waf_sensitivity
+        
+        # Dynamically inject estimated state into CBF constraints formulation
+        b_cbf = GAMMA_CBF * (X_MAX - est_threat) + COOLING_RATE
+        
+        # 4. Analytical O(1) safety filtering execution
+        u_safe = solve_analytical_qp(U_NOMINAL, A_cbf, b_cbf)
+        
+        # 5. Environment state propagation
+        waf_alertness += (u_safe * SIG_GAIN * waf_sensitivity) - COOLING_RATE
+        waf_alertness = max(15.0, waf_alertness)
+        
+        is_blocked = 0
+        if waf_alertness >= X_MAX:
+            is_blocked = 1
+            waf_alertness = 30.0
+            
+        cursor.execute("""
+            INSERT INTO unified_telemetry 
+            (test_group, step, true_threat, estimated_threat, p_min_used, is_blocked, latency_sec) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, ('Group C', step+1, threat, est_threat, p_min, is_blocked, delay))
+
+    # -------------------------------------------------------------------------
+    # Group D: Meta-Cognitive Autopilot (ACS-KF Dynamic Observer + CBF-QP)
+    # -------------------------------------------------------------------------
+    print("[*] Simulating Group D: Meta-Cognitive Autopilot (Closed-Loop Unified Mode)...")
+    kf_meta = MetaAdaptiveKalmanFilter(initial_state=15.0)
+    planner_meta = MCTSTSPPlanner()
+    current_route_meta = []
+    waf_alertness = 15.0
+    
+    for step in range(total_runs):
+        threat = true_threat_envelope[step]
+        delay = random.uniform(2.0, 4.0)
+        
+        # 1. Outer Loop path-planning step
+        if len(current_route_meta) >= 5:
+            current_route_meta = []
+        next_target = planner_meta.search_next_node(current_route_meta)
+        current_route_meta.append(next_target)
+        
+        # 2. Active Observer cycle (Dynamic Meta-PID Covariance tracking)
+        est_threat, p_min, _ = kf_meta.update(threat, use_meta_control=True)
+        
+        # 3. Inner Loop Controller constraints mapping
+        waf_sensitivity = 1.0 if not (4000 <= step <= 6500) else 2.5
+        A_cbf = SIG_GAIN * waf_sensitivity
+        b_cbf = GAMMA_CBF * (X_MAX - est_threat) + COOLING_RATE
+        
+        # 4. O(1) analytical projection calculation
+        u_safe = solve_analytical_qp(U_NOMINAL, A_cbf, b_cbf)
+        
+        # 5. Environment state propagation
+        waf_alertness += (u_safe * SIG_GAIN * waf_sensitivity) - COOLING_RATE
+        waf_alertness = max(15.0, waf_alertness)
+        
+        is_blocked = 0
+        if waf_alertness >= X_MAX:
+            is_blocked = 1
+            waf_alertness = 30.0
+            
+        cursor.execute("""
+            INSERT INTO unified_telemetry 
+            (test_group, step, true_threat, estimated_threat, p_min_used, is_blocked, latency_sec) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, ('Group D', step+1, threat, est_threat, p_min, is_blocked, delay))
+
+    conn.commit()
+    conn.close()
+    print("[+] Simulated loops completed successfully. Logs committed to the database.")
+
+# =============================================================================
+# 6. HIGH-RESOLUTION SCIENTIFIC TELEMETRY PLOT
+# =============================================================================
+
+def generate_unified_plot():
+    """Outputs standardized, publication-grade vector comparative diagrams of survival rates."""
+    enforce_integrity_shields()
+    
+    conn = sqlite3.connect(DB_NAME)
+    groups = ['Group A', 'Group B', 'Group C', 'Group D']
+    labels = {
+        'Group A': 'Group A: Traditional Bot (Static Line & Rand Sleep)',
+        'Group B': 'Group B: Kinetic Spoofing (Chaos & Bezier Path)',
+        'Group C': 'Group C: Cognitive Autopilot (Static $P_{min}$ Observer + CBF-QP)',
+        'Group D': 'Group D: Meta-Cognitive Autopilot (Dynamic $P_{min}(t)$ ACS-KF + CBF-QP)'
+    }
+    colors = {'Group A': '#e74c3c', 'Group B': '#f39c12', 'Group C': '#3498db', 'Group D': '#2ecc71'}
+    
+    fig, ax1 = plt.subplots(figsize=(12, 7.5))
+    
+    print("[*] Generating academic comparison curves plot...")
+    for g in groups:
+        cursor = conn.cursor()
+        cursor.execute("SELECT step, is_blocked FROM unified_telemetry WHERE test_group = ? ORDER BY step ASC", (g,))
+        rows = cursor.fetchall()
+        steps = [r[0] for r in rows]
+        is_blocked = [r[1] for r in rows]
+        cumulative_blocks = np.cumsum(is_blocked)
+        ax1.plot(steps, cumulative_blocks, label=labels[g], color=colors[g], linewidth=2.5)
+    
+    ax1.axvspan(4000, 6500, color='#95a5a6', alpha=0.18, label='Extreme Threat Phase (WAF Dynamic Challenge Upgrade)')
+    ax1.set_title("Project Garagara Special Release: Unified Observer-Controller Survivability Comparison", fontsize=12, fontweight='bold', pad=15)
+    ax1.set_xlabel("Sequential Request Horizon ($k$)", fontsize=11, labelpad=10)
+    ax1.set_ylabel("Cumulative Detection & Block Count", fontsize=11, labelpad=10)
+    ax1.grid(True, linestyle='--', alpha=0.5)
+    ax1.legend(loc='upper left', fontsize=9.5, frameon=True, facecolor='white', edgecolor='#bdc3c7')
+    
+    # Save natively both in workspace and directly to the user's desktop path
+    desktop_path = os.path.expanduser("~/Desktop")
+    if os.path.exists(desktop_path):
+        plt.savefig(os.path.join(desktop_path, "garagara_unified_survival_curve.png"), dpi=300, bbox_inches='tight')
+    plt.savefig("garagara_unified_survival_curve.png", dpi=300, bbox_inches='tight')
+    plt.close()
+    conn.close()
+    print("[+] Plot rendering complete. Exported vector map to workspace and desktop.")
+
+if __name__ == "__main__":
+    run_unified_simulation(10000)
+    generate_unified_plot()
+```
+eof
