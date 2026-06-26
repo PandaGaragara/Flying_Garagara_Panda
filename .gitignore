@@ -1,0 +1,41 @@
+==============================================================================
+
+PANDA GMC-AUTOPILOT: BUILD PROTECTION FILTER
+
+==============================================================================
+
+Ignore compiled Python bytecode caching
+
+pycache/
+*.py[cod]
+*$py.class
+*.pyo
+
+Ignore intermediate, machine-generated C/C++ files
+
+Ensures proprietary implementation fingerprints remain un-indexed
+
+gmc_secured_middleware.c
+
+Ignore local platform compiled machine binaries
+
+*.so
+*.pyd
+*.dylib
+*.dll
+
+Ignore local build environment outputs and virtual environments
+
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+ENV/
+env/
+
+Ignore IDE configuration files
+
+.idea/
+.vscode/
+.DS_Store
