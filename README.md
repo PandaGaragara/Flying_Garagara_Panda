@@ -1,5 +1,9 @@
 GMC-Autopilot: Provably Safe Invariance of Hybrid Cyber-Navigation in Denied Topologies
 
+Author: Dr.Panda Garagara
+
+Doi:https://doi.org/10.5281/zenodo.20805743 / https://doi.org/10.5281/zenodo.20772226 / https://doi.org/10.5281/zenodo.20710474
+
 📌 1. Control-Theoretic Paradigm vs. Heuristic Empiricism
 
 Modern distributed edge network topologies rely heavily on high-capacity, non-convex empirical function approximators (e.g., neural network behavioral classifiers) to regulate stateful resource allocation and boundary access. When subjected to non-stationary parameters and adversarial step-shocks, these trial-and-error machine learning models suffer from inherent causal feedback latency, out-of-distribution hallucinations, and catastrophic boundary violation cascades.
