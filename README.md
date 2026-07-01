@@ -2,15 +2,15 @@ GMC-Autopilot: Provably Safe Invariance of Hybrid Cyber-Navigation in Denied Top
 
 Author: Dr. Panda Garagara, Independent Researcher, Institute of Bamboo and Cyber-Aerodynamics
 
-Secure Communications: panda_garagara@proton.me / garagara_control@proton.me
+Secure Communications: panda_garagara@proton.me | garagara_control@proton.me
 
-Permanent Academic Records & Digital Object Identifiers (DOIs): 
+Academic Foundations (DOIs): 
 
-Phase I: https://doi.org/10.5281/zenodo.20710474
+Phase I (Hybrid Invariance): https://doi.org/10.5281/zenodo.20710474
 
-Phase II: https://doi.org/10.5281/zenodo.20805743
+Phase II (Cognitive Autopilot): https://doi.org/10.5281/zenodo.20805743
 
-Phase III: https://doi.org/10.5281/zenodo.20772226
+Phase III (In-Vivo Resilience): https://doi.org/10.5281/zenodo.20772226
 
 📌 1. Control-Theoretic Paradigm vs. Heuristic Empiricism
 
@@ -204,15 +204,17 @@ Critical Limit ├── ── ── ── ── ── ── ── ──
      ═══════════ GMC Autopilot (Absolute Invariance Line) ═══════════
 
 
-🔐 7. Source Disclosure & Intellectual Property Policy
+🛡️ 7. Open-Core Philosophy & Copyleft Protection
 
-To balance academic transparency with the rigorous preservation of structural intellectual property, our codebase roadmap is partitioned as follows:
+I believe in open science and reproducible engineering. However, I also believe in protecting the intellectual labor of independent researchers from being silently exploited by multi-billion dollar scraping corporations and commercial AI aggregators.
 
-Unified Open-Core Release (gmc_secured_middleware.py): The complete, runnable Python engine consolidating the foundational mathematics, the CUSUM statistical drift observer, the Supermartingale robust contraction cushion, and the 1-D analytical $O(1)$ QP solver is fully open-sourced in this repository under the GNU Affero General Public License v3.0 (AGPL-3.0). This file features production-grade environment integrity checks and runtime anti-analysis guards (enforce_integrity_shields()).
+Therefore, this repository is partitioned under a strict Open-Core Model:
 
-Production Core (Phase IV - Proprietary): The high-performance, enterprise-grade execution engine containing the real-time unified Stochastic MCTS-TSP multi-node trajectory planning loop, cross-layer state machine tracking, and hardware-in-the-loop (HIL) compiler targets is classified as closed-source proprietary technology. To preserve strategic intellectual sovereignty and maintain compliance with institutional security regulations, this core remains strictly isolated from the public repository and is distributed exclusively under bilateral commercial frameworks.
+Unified Open-Core Middleware (gmc_secured_middleware.py): The complete, fully runnable mathematical engine containing the core CUSUM statistical drift observer, the Supermartingale robust contraction cushion, and the 1-D analytical $O(1)$ QP solver is fully open-sourced in this repository under the GNU Affero General Public License v3.0 (AGPL-3.0).
 
-Note: Integration of the AGPL-3.0 codebase into proprietary, closed-source system architectures requires a commercial exemption license to prevent source code disclosure requirements.
+The AGPL Guardrail: Under AGPL-3.0, anyone is free to audit, study, and run this middleware for personal or academic purposes. However, if any commercial closed-source system or platform integrates this core into their proprietary data acquisition pipeline, they are legally required to open-source their entire stack.
+
+Enterprise Custom Builds (Closed-Source Exemptions): For commercial entities that wish to integrate this engine into their proprietary systems without copyleft disclosure requirements, or require the hardware-in-the-loop (HIL) compiler targets for distributed clusters, we offer proprietary bilateral licensing agreements.
 
 🚀 8. Replicating Results
 
@@ -253,18 +255,10 @@ python gmc_secured_middleware.py
 }
 
 
-💬 10. Proprietary Licensing & Commercial Inquiries
+💬 10. Licensing & Commercial Inquiries
 
-For enterprise organizations requiring production-scale deployments, custom parameter integration, or closed-source exemptions from AGPL-3.0 copyleft obligations:
+To maintain strict focus on technical development, we communicate exclusively via asynchronous, PGP-encrypted email channels. We do not participate in real-time sales calls.
 
-Commercial Exemption Licenses: Customized agreements tailored for proprietary system architectures, edge node deployments, and high-frequency communication infrastructures.
-
-Technical Integration Support: Advanced consulting contracts for custom control law tuning and physical Pixhawk/PX4 flight hardware mapping.
-
-Communications Protocol
-
-To maintain strict operational discretion and technical focus, our team communicates exclusively via asynchronous, PGP-encrypted email threads. We do not participate in real-time teleconferences or video calls.
-
-For commercial licensing inquiries, non-disclosure agreement (NDA) templates, or custom deployment specifications, contact: panda_garagara@proton.me
+For commercial exemption licenses, NDA-backed evaluations, or custom control allocation tuning, contact: panda_garagara@proton.me
 
 Panda peace. 🐼✌️
